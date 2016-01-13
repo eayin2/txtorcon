@@ -11,6 +11,7 @@ import hashlib
 import shutil
 import socket
 import subprocess
+import ipaddress
 import struct
 
 from twisted.internet import defer
@@ -65,12 +66,6 @@ def maybe_create_db(path):
 city = maybe_create_db("/usr/share/GeoIP/GeoLiteCity.dat")
 asn = maybe_create_db("/usr/share/GeoIP/GeoIPASNum.dat")
 country = maybe_create_db("/usr/share/GeoIP/GeoIP.dat")
-
-try:
-    import ipaddr as _ipaddr
-    ipaddr = _ipaddr
-except ImportError:
-    ipaddr = None
 
 
 def is_executable(path):
@@ -127,10 +122,9 @@ def maybe_ip_addr(addr):
     TODO consider explicitly checking for .exit or .onion at the end?
     """
 
-    if ipaddr is not None:
-        try:
-            return ipaddr.IPAddress(addr)
-        except ValueError:
+    try:
+        return ipaddress.ip_address(addr)
+    except ValueError:
             pass
     return str(addr)
 
